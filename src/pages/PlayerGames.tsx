@@ -1,17 +1,18 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { toast } from '@/hooks/use-toast';
-import ContactForm from '@/components/ContactForm';
-import { 
-  PlayerGamesHeader, 
-  PlayerGamesList, 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import Icon from "@/components/ui/icon";
+import { toast } from "@/hooks/use-toast";
+import ContactForm from "@/components/ContactForm";
+import {
+  PlayerGamesHeader,
+  PlayerGamesList,
   EmptyTabContent,
   AddListingCTA,
-  PlayerGame
-} from '@/components/PlayerGamesComponents';
+  PlayerGame,
+} from "@/components/PlayerGamesComponents";
 
 // Моковые данные игр от пользователей
 const playerGamesData: PlayerGame[] = [
@@ -20,24 +21,30 @@ const playerGamesData: PlayerGame[] = [
     title: "FIFA 23",
     price: 2500,
     sellerName: "GameMaster",
-    imageUrl: "https://images.unsplash.com/photo-1587155096103-1a32d7a0f5b5?q=80&w=1000&auto=format&fit=crop",
-    description: "Футбольный симулятор от Electronic Arts. Использовалась менее месяца."
+    imageUrl:
+      "https://images.unsplash.com/photo-1587155096103-1a32d7a0f5b5?q=80&w=1000&auto=format&fit=crop",
+    description:
+      "Футбольный симулятор от Electronic Arts. Использовалась менее месяца.",
   },
   {
     id: "p2",
     title: "Cyberpunk 2077",
     price: 2800,
     sellerName: "CyberPlayer",
-    imageUrl: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop",
-    description: "Ролевая игра от CD Projekt Red. Установка через GOG без привязки."
+    imageUrl:
+      "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop",
+    description:
+      "Ролевая игра от CD Projekt Red. Установка через GOG без привязки.",
   },
   {
     id: "p3",
     title: "Elden Ring",
     price: 3800,
     sellerName: "SoulsLover",
-    imageUrl: "https://images.unsplash.com/photo-1486572788966-cfd3df1f5b42?q=80&w=1000&auto=format&fit=crop",
-    description: "Популярная ролевая игра от FromSoftware. Новая, не использовалась."
+    imageUrl:
+      "https://images.unsplash.com/photo-1486572788966-cfd3df1f5b42?q=80&w=1000&auto=format&fit=crop",
+    description:
+      "Популярная ролевая игра от FromSoftware. Новая, не использовалась.",
   },
 ];
 
@@ -48,9 +55,9 @@ const PlayerGames: React.FC = () => {
   const navigate = useNavigate();
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string>("");
-  
+
   // Проверяем авторизацию пользователя
-  const isLoggedIn = !!localStorage.getItem('user');
+  const isLoggedIn = !!localStorage.getItem("user");
 
   /**
    * Обработчик кнопки "Связаться с продавцом"
@@ -60,12 +67,12 @@ const PlayerGames: React.FC = () => {
       toast({
         title: "Требуется авторизация",
         description: "Чтобы связаться с продавцом, необходимо войти в аккаунт",
-        variant: "destructive"
+        variant: "destructive",
       });
-      navigate('/login');
+      navigate("/login");
       return;
     }
-    
+
     setSelectedGame(gameTitle);
     setContactFormOpen(true);
   };
@@ -78,12 +85,12 @@ const PlayerGames: React.FC = () => {
       toast({
         title: "Требуется авторизация",
         description: "Чтобы добавить объявление, необходимо войти в аккаунт",
-        variant: "destructive"
+        variant: "destructive",
       });
-      navigate('/login');
+      navigate("/login");
       return;
     }
-    
+
     toast({
       title: "Функция в разработке",
       description: "Возможность добавления объявлений скоро будет доступна",
@@ -93,14 +100,14 @@ const PlayerGames: React.FC = () => {
   /**
    * Обработчик кнопки "Вернуться в официальный магазин"
    */
-  const navigateToHome = () => navigate('/');
+  const navigateToHome = () => navigate("/");
 
   return (
     <div className="min-h-screen bg-background">
       {/* Заголовок секции */}
-      <PlayerGamesHeader 
-        handleAddListing={handleAddListing} 
-        navigateToHome={navigateToHome} 
+      <PlayerGamesHeader
+        handleAddListing={handleAddListing}
+        navigateToHome={navigateToHome}
       />
 
       {/* Основной контент */}
@@ -114,7 +121,7 @@ const PlayerGames: React.FC = () => {
               <TabsTrigger value="console">Консоли</TabsTrigger>
               <TabsTrigger value="other">Другое</TabsTrigger>
             </TabsList>
-            
+
             {/* Фильтры и сортировка (будут реализованы в будущем) */}
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">
@@ -127,43 +134,43 @@ const PlayerGames: React.FC = () => {
               </Button>
             </div>
           </div>
-          
+
           {/* Вкладка "Все игры" */}
           <TabsContent value="all">
-            <PlayerGamesList 
-              games={playerGamesData} 
-              onContactClick={handleContactClick} 
+            <PlayerGamesList
+              games={playerGamesData}
+              onContactClick={handleContactClick}
             />
           </TabsContent>
-          
+
           {/* Пустые вкладки для будущего наполнения */}
-          <EmptyTabContent 
-            value="pc" 
-            message="Скоро здесь появятся игры для ПК от пользователей!" 
+          <EmptyTabContent
+            value="pc"
+            message="Скоро здесь появятся игры для ПК от пользователей!"
           />
-          
-          <EmptyTabContent 
-            value="console" 
-            message="Скоро здесь появятся консольные игры от пользователей!" 
+
+          <EmptyTabContent
+            value="console"
+            message="Скоро здесь появятся консольные игры от пользователей!"
           />
-          
-          <EmptyTabContent 
-            value="other" 
-            message="Скоро здесь появятся другие предложения от пользователей!" 
+
+          <EmptyTabContent
+            value="other"
+            message="Скоро здесь появятся другие предложения от пользователей!"
           />
         </Tabs>
-        
+
         <Separator className="my-8" />
-        
+
         {/* CTA блок с призывом к действию */}
         <AddListingCTA handleAddListing={handleAddListing} />
       </main>
-      
+
       {/* Форма связи с продавцом */}
-      <ContactForm 
-        isOpen={contactFormOpen} 
-        onClose={() => setContactFormOpen(false)} 
-        selectedGame={selectedGame} 
+      <ContactForm
+        isOpen={contactFormOpen}
+        onClose={() => setContactFormOpen(false)}
+        selectedGame={selectedGame}
       />
     </div>
   );
