@@ -1,11 +1,17 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
-import Icon from '@/components/ui/icon';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import Icon from "@/components/ui/icon";
 
 interface ContactFormProps {
   isOpen: boolean;
@@ -13,44 +19,66 @@ interface ContactFormProps {
   selectedGame?: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ isOpen, onClose, selectedGame }) => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+const ContactForm: React.FC<ContactFormProps> = ({
+  isOpen,
+  onClose,
+  selectedGame,
+}) => {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  React.useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      try {
+        const userData = JSON.parse(userString);
+        if (userData.email) {
+          setEmail(userData.email);
+        }
+      } catch (e) {
+        console.error("Failed to parse user data");
+      }
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Email validation
+    setIsLoading(true);
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast({
         title: "Ошибка",
         description: "Пожалуйста, введите корректный email",
-        variant: "destructive"
+        variant: "destructive",
       });
+      setIsLoading(false);
       return;
     }
 
-    // Notification that the form has been submitted
-    toast({
-      title: "Запрос отправлен",
-      description: "Мы свяжемся с вами в ближайшее время",
-    });
+    setTimeout(() => {
+      toast({
+        title: "Запрос отправлен",
+        description: "Мы свяжемся с вами в ближайшее время",
+      });
 
-    // Open mail client with pre-filled data
-    const subject = encodeURIComponent(`Покупка игры: ${selectedGame || 'Не указано'}`);
-    const body = encodeURIComponent(`Здравствуйте, я хотел бы приобрести ${selectedGame || 'игру'}.
-    
+      const subject = encodeURIComponent(
+        `Покупка игры: ${selectedGame || "Не указано"}`,
+      );
+      const body =
+        encodeURIComponent(`Здравствуйте, я хотел бы приобрести ${selectedGame || "игру"}.
+      
 ${message}
 
 С уважением, ${email}`);
 
-    window.location.href = `mailto:bespalovae2013@gmail.com?subject=${subject}&body=${body}`;
-    
-    // Reset form and close dialog
-    setEmail('');
-    setMessage('');
-    onClose();
+      window.location.href = `mailto:bespalovae2013@gmail.com?subject=${subject}&body=${body}`;
+
+      setMessage("");
+      onClose();
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -62,7 +90,9 @@ ${message}
             Купить игру
           </DialogTitle>
           <DialogDescription>
-            {selectedGame ? `Оформление заказа на игру "${selectedGame}"` : 'Оставьте контактные данные для связи'}
+            {selectedGame
+              ? `Оформление заказа на игру "${selectedGame}"`
+              : "Оставьте контактные данные для связи"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -78,11 +108,15 @@ ${message}
                 className="col-span-3"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
                 required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="message" className="text-right text-sm font-medium">
+              <label
+                htmlFor="message"
+                className="text-right text-sm font-medium"
+              >
                 Сообщение
               </label>
               <Textarea
@@ -91,11 +125,25 @@ ${message}
                 className="col-span-3"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" className="w-full sm:w-auto">Отправить заявку</Button>
+            <Button
+              type="submit"
+              className="w-full sm:w-auto"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Icon name="Loader2" className="mr-2 h-4 w-4 animate-spin" />
+                  Отправка...
+                </>
+              ) : (
+                "Отправить заявку"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
